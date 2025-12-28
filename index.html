@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>PHONE LOOKUP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  background:black;
+  color:#00ff66;
+  font-family:monospace;
+}
+.container{
+  max-width:600px;
+  margin:40px auto;
+  padding:20px;
+  border:1px solid #00ff66;
+}
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  background:#050505;
+  color:#00ff66;
+  border:1px solid #00ff66;
+}
+button{cursor:pointer}
+#hack{
+  display:none;
+  margin-top:15px;
+  height:140px;
+  overflow:auto;
+  border:1px solid #00ff66;
+  padding:10px;
+}
+#result{
+  display:none;
+  margin-top:15px;
+  border:1px solid #00ff66;
+  padding:10px;
+}
+.line{
+  opacity:.85;
+  animation:flicker .3s infinite alternate;
+}
+@keyframes flicker{
+  from{opacity:.3}
+  to{opacity:1}
+}
+
+/* ===== TEXT INFO ===== */
+.info-text{
+  margin-top:20px;
+  padding:10px;
+  border:1px dashed #00ff66;
+  font-size:13px;
+  opacity:.85;
+  text-align:center;
+}
+
+/* ===== CREDITS ===== */
+.credit{
+  margin-top:10px;
+  text-align:center;
+  font-size:13px;
+  opacity:.7;
+}
+.credit a{
+  color:#00ff66;
+  text-decoration:none;
+}
+.credit a:hover{
+  opacity:1;
+  text-decoration:underline;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h2>📡 USER PHONE INFO LOOKUP</h2>
+
+  <input id="phone" placeholder="+628123456789">
+  <button id="scan">START SCAN</button>
+
+  <div id="hack"></div>
+  <div id="result"></div>
+
+  <!-- TEKS BEBAS -->
+  <div class="info-text">
+    ⚠️ Tool ini adalah untuk mengecek operator Indonesia dan ini berfungsi 87%<br>
+    jika ingin fitur lain seperti melihat lokasi orang yang di tuju😈 silahkan hubungi di bawah ini👇👇
+  </div>
+
+  <!-- CREDITS -->
+  <div class="credit">
+    <a href="https://t.me/Pixel12858" target="_blank">
+      © Credits : Pixel & Logic
+    </a>
+  </div>
+</div>
+
+<script>
+// ===== PREFIX OPERATOR INDONESIA (RESMI / ESTIMASI) =====
+const prefixData = [
+  {p:["811","812","813","821","822","823","851","852","853"], o:"Telkomsel"},
+  {p:["814","815","816","855","856","857","858"], o:"Indosat Ooredoo Hutchison"},
+  {p:["817","818","819","859","877","878"], o:"XL Axiata"},
+  {p:["881","882","883","884","885","886","887","888","889"], o:"Smartfren"}
+];
+
+function detectOperator(phone){
+  phone = phone.replace(/\s/g,"");
+  if(phone.startsWith("08")) phone = "+62"+phone.slice(1);
+  if(!phone.startsWith("+62")) return "UNKNOWN";
+
+  const n = phone.replace("+62","");
+  for(const g of prefixData){
+    if(g.p.some(x => n.startsWith(x))) return g.o;
+  }
+  return "UNKNOWN";
+}
+
+// ===== EVENT SCAN =====
+document.getElementById("scan").onclick = ()=>{
+  const phone = document.getElementById("phone").value.trim();
+  if(!phone) return alert("MASUKKAN NOMOR");
+
+  const hack = document.getElementById("hack");
+  const result = document.getElementById("result");
+
+  hack.innerHTML="";
+  hack.style.display="block";
+  result.style.display="none";
+
+  let i=0;
+  const t=setInterval(()=>{
+    hack.innerHTML+=`<div class="line">[${Date.now()}] ${Math.random().toString(36).slice(2)}</div>`;
+    hack.scrollTop=hack.scrollHeight;
+    i++;
+    if(i>18){
+      clearInterval(t);
+      showResult(phone);
+    }
+  },120);
+};
+
+function showResult(phone){
+  const op = detectOperator(phone);
+  document.getElementById("hack").style.display="none";
+  const r = document.getElementById("result");
+  r.style.display="block";
+  r.innerHTML=`
+    <b>SCAN COMPLETE</b><br><br>
+    NUMBER  : ${phone}<br>
+    COUNTRY : INDONESIA<br>
+    OPERATOR: ${op}<br>
+    STATUS  : PREFIX-BASED ESTIMATION
+  `;
+}
+</script>
+</body>
+</html>
